@@ -1,0 +1,12 @@
+# Exclude objects and binaries
+*.[oa]
+# Exclude backups
+*~
+# Exclude the compiled hex files
+*.hex
+# Exclude all in the tmp dir
+tmp/
+# Vim swap files
+.*.sw[po]
+# All in the .dep build dir
+.dep/

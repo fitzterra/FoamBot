@@ -1,0 +1,84 @@
+= Foam Bot =
+
+== Bumpers ==
+The bumpers on the bot are lever switches positioned at the Front Left and Right
+and Rear Left and Right (rear switches to be added later, but software alreay
+made to handle them).
+
+On these switches, the common pin is connected to Gnd and the Normally Open pin
+connected to a digital input on the Arduino.
+
+With this configuration we can use the AtMega internal pullup resistors to keep
+the digital input *HIGH* until the bumper is activated and the N/O is connected
+to Gnd via the common pin. This also means that the Digital input goes low.
+
+This setup has a drawback in that the bumper login is inverted: a *HIGH* means
+that the bumper is *not* activated, while a *LOW* means that it *is* bumped.
+This is not a major problem, but it would make the code intuative if these
+states were reversed.
+
+This drawback can be removed by one of these options:
+    * Adding a 10kohm resistor to GND for each of the bumper digital input pins
+      and connecting the switch common to the resistor and digital pin, and the
+      *Normally Open* pin on the switch to Vcc.
+    * With the internal pullups activated and the switch common connected to the
+      digital input pin, use the *Noramlly Closed* pin on the switch to connect
+      to ground instead of the *Normally Open* pin. This will cause the pin to
+      be pulled low at all times, and only go *high* when the bumber is activated
+      and the *Normally Closed* value goes open, which causes the pullup to pull
+      the input *high*.
+
+The second option is the easiest to set up and requires the least amount of
+additional components, but will have a constant tiny current flow through the
+pullup and switch to ground. Although this current is tiny, it may not be
+desired on a bot running off batteries.
+
+== Software ==
+Since we like flexibility, the bumpers sensor module would be written such that
+it would deal with bumpers that indicates *active* by either a *HIGH* or a *LOW*
+value on the digital input.
+
+All that is required is to set the *BUMPED* config define to 0 to indicated that
+the bumpers *active (bumped) state* will be a *0* on the input pin, or set it to
+1 to indicate that the bumpers *active state* will be a *1* on the input pin.
+
+Once this is done, the code will ensure that the bumper *state* bits will always
+be stored as *HIGH (1)* for an active bumper and a *LOW (0)* for an inactive
+bumper. This will be done irrespective of the switch connections an what state
+this configuration puts on the digital bumper sensor pin, as long as the *BUMPED*
+config option is set correctly.
+
+In an effort to save memory, all bumper states will be tracked as individual bit
+positions in an unsigned integer, instead of taking one unsigned int for each
+bumper.
+
+By XNORing the bumper input pin with the *BUMPED* config setting, we can insure
+to always store the bumper state as *HIGH* when bumped and *LOW* otherwise which
+is easier to deal with in code.
+
+The XNOR truth table looks like this:
+
+| Sensor | *BUMPED* | State |
+|--------|----------|-------|
+| 0      | 0        | 1     |
+| 0      | 1        | 0     |
+| 1      | 0        | 0     |
+| 1      | 1        | 1     |
+
+Since C/C++ does not have an XNOR operator, we use XOR and then invert the
+result.
+
+To keep the bit position for each bumper constant, the config definitions:
+    * *BUMP_FL* - Front Left bit position
+    * *BUMP_FR* - Front Right bit position
+    * *BUMP_RL* - Rear Left bit position
+    * *BUMP_RR* - Rear Right bit position
+are made in `config.h`.
+
+These constants can be used to isolate just a single bumper bit using the
+bitwise *AND (&)* operator:
+    `frontRight = state & BUMPED`
+
+If this value is greated than 0, then the bumper is active.
+
+
