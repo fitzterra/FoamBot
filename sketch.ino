@@ -5,6 +5,7 @@
 #include "utils.h"
 #include <TaskScheduler.h>
 #include "Streaming.h"
+#include "lcd.h"
 #include "commands.h"
 #include "bumpers.h"
 #include "driveTrain.h"
@@ -25,7 +26,7 @@ void setup() {
 
 void loop() {
     // Create the drive train
-    DriveTrain driveTrain(9, 10);
+    DriveTrain driveTrain(SERVO_LEFT, SERVO_RIGHT);
 
     // Create the tasks.
 	SerialIn serialInput;
@@ -34,11 +35,11 @@ void loop() {
 	LineFollow lineFollow(LINEFOL_LEFT, LINEFOL_RIGHT, &driveTrain);
 	CommandConsumer comCon(&decoder, &driveTrain, &lineFollow);
 	Bumpers bumpers(BUMP_FL_PIN, BUMP_FR_PIN, &driveTrain);
-
+    LCD lcd(LCD_RATE, &comCon, &driveTrain, &lineFollow);
     
     // Initialise the task list and scheduler.
     Task *tasks[] = {&serialInput, &irInput, &decoder, &comCon, &lineFollow,
-	                 &bumpers};
+	                 &bumpers, &lcd};
     TaskScheduler sched(tasks, NUM_TASKS(tasks));
 
     // Run the scheduler - never returns.

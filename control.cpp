@@ -569,7 +569,8 @@ void CommandConsumer::run(uint32_t now) {
 			_device->reverse();
 			break;
 		case CMD_BRK:
-			// Brake
+			// Brake. Deactive line follow mode in case it was active.
+			_lineFol->deactivate();
 			_device->stop();
 			break;
 		case CMD_LFT:
@@ -593,11 +594,14 @@ void CommandConsumer::run(uint32_t now) {
 			_device->info();
 			break;
 		case CMD_DMO:
-			// For now we use the demo command to go into line follower mode.
-			// Stop the bot
-			_device->stop();
-			// Activate the line follower
-			_lineFol->activate();
+			// For now we use the demo command to go into line follower mode if not
+			// doing so already.
+			if (!_lineFol->isActive()) {
+				// Stop the bot
+				_device->stop();
+				// Activate the line follower
+				_lineFol->activate();
+			}
 			break;
 		default:
 			// Debug

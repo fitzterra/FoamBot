@@ -32,6 +32,8 @@ class LineFollow : public Task {
 		virtual bool canRun(uint32_t now);
 		virtual void activate() {_active = true;};
 		virtual void deactivate() {_active = false;};
+		bool isActive() {return _active;};
+
 };
 
 #endif  //_LINEFOL_H_

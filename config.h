@@ -13,12 +13,20 @@
 // array indexes and should always be values 0 and 1
 enum { LEFT, RIGHT, FORWARD, BACKWARD, STOP };
 
-// ############### Pin definitions #################
-#define IR_PIN			6	// IR Receiver
-#define SERVO_LEFT		9	// Pin for left servo
-#define SERVO_RIGHT		10	// Pin for right servo
+// ############### Digital Pin definitions #################
+#define IR_PIN			4	// IR Receiver
+#define SERVO_LEFT		5	// Pin for left servo
+#define SERVO_RIGHT		6	// Pin for right servo
 #define BUMP_FL_PIN		2	// Front left bumper pin
 #define BUMP_FR_PIN		3	// Front right bumper pin
+// These are hardcoded in the LCD lib, but we define them here as a reminder
+#define LCD_DC          8 
+#define LCD_RESET       9 
+#define LCD_SCE         10 
+#define LCD_SDIN        11 
+#define LCD_SCLK        13 
+
+// ############### Analog Pin definitions #################
 #define LINEFOL_LEFT	4	// Line Follower Left Sensor Analog pin
 #define LINEFOL_RIGHT	5	// Line Follower Right Sensor Analog pin
 
@@ -31,11 +39,14 @@ enum { LEFT, RIGHT, FORWARD, BACKWARD, STOP };
 #define BUMP_RR			3
 // A digital output pin that will be set high if any bumper is active.
 // Can be used to light an LED or something.
-#define BUMP_LED_PIN    13
+#define BUMP_LED_PIN    7
 
 // ############### Line Follower definitions #################
 #define LINEFOL_MIN		400  // Min 'black' reading. Lower indicates off line
 #define LINEFOL_MAX		1000  // Max 'black' reading. Higher means error.
+
+// ############### LCD definitions #################
+#define LCD_RATE        100  // LCD update rate in milliseconds
 
 // ############### Serial Input config #################
 // This is the minumum delay required between successive serial input characters.

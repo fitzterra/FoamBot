@@ -45,7 +45,7 @@ LCD::LCD(uint32_t rate)
 void LCD::run(uint32_t now) {
 	// Update the current mode
     _lcd.gotoXY(0,0);
-    _lcd.print("Testing LCD...\n");
+    _lcd.print("Testing LCD...");
 	_lcd.print(now);
 
 
