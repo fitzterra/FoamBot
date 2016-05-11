@@ -19,6 +19,28 @@ Bot control at the moment consists of:
 
 Software - TODO: details to be added, but see the code...
 
+Components
+----------
+The various hardware and software components making up the bot is described
+below.
+
+### Base and Structure ###
+Foam board, hexagon??
+
+### Power supply ###
+4 x AA for servos, LiPo for MCu, LiPo Rider for charging and DC-DC step-up and
+stable supply... Also provides pass through for USB programming...
+
+### Drive train ###
+Continuous rotation servos, Arduino `Servo` library, see movement controls...
+
+### IR Receiver ###
+TSOP???? IR Receiver, Multi Proto ???
+http://arcfn.com/2009/08/multi-protocol-infrared-remote-library.htm
+
+### LCD ###
+Nokia 5110/PCD8544, "Fast PCD8544 Library", http://forum.arduino.cc/index.php?topic=176794.0
+
 Current status
 --------------
 At the moment it is difficult to tweak the line following functionality since

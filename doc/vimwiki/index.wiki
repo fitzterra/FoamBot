@@ -33,6 +33,20 @@ additional components, but will have a constant tiny current flow through the
 pullup and switch to ground. Although this current is tiny, it may not be
 desired on a bot running off batteries.
 
+== LCD ==
+
+This is a 14x6 display in text only mode:
+
+
+|   | 01234567890123 |
+|---|----------------|
+| 0 | STATE....      |
+| 1 | LAST COMMAND   |
+| 2 | SPD.      DIR. |
+| 3 |                |
+| 4 |                |
+| 5 | LFLFT    LFRGT |
+
 == Software ==
 Since we like flexibility, the bumpers sensor module would be written such that
 it would deal with bumpers that indicates *active* by either a *HIGH* or a *LOW*
