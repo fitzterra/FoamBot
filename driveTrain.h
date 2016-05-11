@@ -63,6 +63,8 @@ class DriveTrain {
         void slowDown();
 		void setSpeed(uint16_t speed);
 		void bumpState(uint8_t bumpers); 
+        int8_t getSpeed() {return _speed;};
+        int8_t getDirection() {return _dir;};
 		void info() {Serial << F("Hello for dt\n"); };
 };
 

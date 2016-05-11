@@ -103,6 +103,7 @@ class CommandConsumer : public Task {
 		CommandConsumer(InputDecoder *id, DriveTrain *dev, LineFollow *lf);
 		virtual void run(uint32_t now);
 		virtual bool canRun(uint32_t now);
+		char *lastCommand();
 };
 
 

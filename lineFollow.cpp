@@ -54,15 +54,17 @@ bool LineFollow::canRun(uint32_t now) {
  * @param now The current millis() counter.
  */
 void LineFollow::run(uint32_t now) {
-	// Read the sensors
-	int l = analogRead(_lPin);
-	int r = analogRead(_rPin);
 	int16_t correction = 0;
 
-	D(F("Line Follower ") << "- l: " << l << "  ,r: " << r << "      \n");
+	// Read the sensors
+	_lVal = analogRead(_lPin);
+	_rVal = analogRead(_rPin);
+
+	D(F("Line Follower ") << "- left: " << _lVal << \
+	  "  ,right: " << _rVal << "      \n");
 
 	// If both sensors are below our min level, we have lost the line
-	if (l<LINEFOL_MIN && r<LINEFOL_MIN) {
+	if (_lVal<LINEFOL_MIN && _rVal<LINEFOL_MIN) {
 		D(F("Line Follower ") << F("lost line. Stopping.\n"));
 		// Deactive line follower mode
 		_active = false;
@@ -72,12 +74,12 @@ void LineFollow::run(uint32_t now) {
 	}
 	// With one sensor less than min level (on 'white') and the other above min
 	// level (on 'black'), we issue a correction
-	if ((l<LINEFOL_MIN && r>=LINEFOL_MIN) || (r<LINEFOL_MIN && l>=LINEFOL_MIN)) {
-		// The correction is the difference between right and left, mapped from
+	if ((_lVal<LINEFOL_MIN && _rVal>=LINEFOL_MIN) ||
+		(_rVal<LINEFOL_MIN && _lVal>=LINEFOL_MIN)) {
+		// The correction is the difference between left and right, mapped from
 		// (-max to +max) to (-100 to 100). The correction value is the turn
 		// direction (sign included) to street to get back on the line again.
-		//correction = map(r-l, -LINEFOL_MAX, LINEFOL_MAX, -100, 100);
-		correction = map(l-r, -LINEFOL_MAX, LINEFOL_MAX, -100, 100);
+		correction = map(_lVal-_rVal, -LINEFOL_MAX, LINEFOL_MAX, -100, 100);
 		D(F("Line Follower ") << F("correction: ") << correction << "               " << endl);
 
 		// Send the correction to the drive train
@@ -86,7 +88,7 @@ void LineFollow::run(uint32_t now) {
 	}
 	// If either sensor is now above max level, it means that at least one of
 	// them are not on the track anymore, but probably both, so we stop
-	if (l>LINEFOL_MAX || r>LINEFOL_MAX) {
+	if (_lVal>LINEFOL_MAX || _rVal>LINEFOL_MAX) {
 		D(F("Line Follower ") << F("lost track. Stopping.\n"));
 		// Deactive line follower mode
 		_active = false;
@@ -98,3 +100,15 @@ void LineFollow::run(uint32_t now) {
 	// If we get here, all is good and the bot is on the line.
 }
 
+/**
+ * Returns the current sensor values via the pointers passed in.
+ *
+ * @param *lVal Pointer to int to receive left sensor value
+ * @param *rVal Pointer to int to receive left sensor value
+ */
+void LineFollow::senseVals(int *lVal, int *rVal) {
+	// Set the values
+	*lVal = _lVal;
+	*rVal = _rVal;
+	return;
+};

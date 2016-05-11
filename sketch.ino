@@ -38,8 +38,8 @@ void loop() {
     LCD lcd(LCD_RATE, &comCon, &driveTrain, &lineFollow);
     
     // Initialise the task list and scheduler.
-    Task *tasks[] = {&serialInput, &irInput, &decoder, &comCon, &lineFollow,
-	                 &bumpers, &lcd};
+    Task *tasks[] = {&lcd, &serialInput, &irInput, &decoder, &comCon,
+					 &bumpers, &lineFollow};
     TaskScheduler sched(tasks, NUM_TASKS(tasks));
 
     // Run the scheduler - never returns.

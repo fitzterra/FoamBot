@@ -208,9 +208,11 @@ _serialIn(si), _irIn(ii) {
 	// Open the serial port if we have not done so already.
 	OpenSerial();
 
-	// Preset learn mode and step
+	// Preset local variables
 	_learnMode = false;
 	_learnStep = 0;
+	_newCmd = false;
+	_repeat = 0;
 }
 
 /**
@@ -607,4 +609,12 @@ void CommandConsumer::run(uint32_t now) {
 			// Debug
 			D(__FILE__<<":"<<__LINE__<<F("# ")<< F("Command not supported now.\n"));
 	}
+}
+
+/**
+ * Returns a pointer into the cmdName array for the string name of the last
+ * command issued.
+ */
+char *CommandConsumer::lastCommand() {
+	return cmdName[_cmd];
 }
