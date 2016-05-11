@@ -1,3 +1,22 @@
+Generic Robot Control
+=====================
+
+This branch of the FoamBot (see below) repository will be  the start of a
+process to create generic robot control mechanisms for 2 wheeled (for now)
+robots using various sensors and control mechanisms.
+
+The idea is to create a type of robot control OS (ideas are still forming in my
+head on what exactly this will be) based on a preemtive task based control
+allocation system which will allow inputs (sensors, controls) and outputs
+(stearing, indicators, actuators, etc) to be plugable.
+
+This system is largley already there in this FoamBot repo, but too much is tied
+to the FomaBot robot itself. This branch will be the start to do this decoupling
+of control and robot specific to more general control system/OS.
+
+Original README follows:
+
+
 FoamBot
 =======
 
