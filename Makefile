@@ -1,38 +1,33 @@
-# Hexapod Makefile using edam's (http://ed.am/dev/make/arduino-mk) makefile
-# for command line compiling.
+# Arduino Make file. Refer to https://github.com/sudar/Arduino-Makefile
 
-# Set the arduino dir
-ARDUINODIR := /home/tomc/Documents/Electronics/Arduino/arduino-1.0.5
-ARDUINOCONST := 105
-# Set the board
-BOARD := uno
-#BOARD := attiny85
+ARDUINO_DIR = /usr/local/share/arduino-1.6.7
 
-# For the ATtiny85, we need to also define the upload protocol and speed
-ifeq "$(BOARD)" "attiny85"
-# We're using the arduino ISP so the protocol and speed is
-PROGRAMMER_PROTOCOL := stk500v1
-PROGRAMMER_SPEED := 19200
-PROGRAMMER_VERBOSITY := -v -v -v
-endif
+ARCHITECTURE  = avr
+BOARD_TAG    = nano
+BOARD_SUB    = atmega328
+ISP_PORT = /dev/ttyUSB1
+MONITOR_PORT = /dev/ttyUSB0
+MONITOR_CMD = miniterm.py
 
-# The monitor program to use if other than 'screen ' is required
-MONITOR_PROG := miniterm.py
-MONITOR_SPEED := 57600
+ARDMK_DIR=/home/tomc/ownCloud/Electronics/Arduino/Arduino-Makefile
 
-# The real Makefile
-include arduino-mk
+CXXFLAGS = -Wno-deprecated-declarations -g3
 
-#
-#----------------------------------------------------------------------------
-#
-environ:
-	@echo "Arduino dir     :" $(ARDUINODIR)
-	@echo "Arduino Const   :" $(ARDUINOCONST)
-	@echo "Sketchbook      :" $(SKETCHBOOK)
-	@echo "AVR tools path  :" $(AVRTOOLSPATH)
-	@echo "Sources         :" $(SOURCES)
-	@echo "Headers         :" $(HEADERS)
-	@echo "Libraries       :" $(LIBRARIES)
-	@echo "Board files     :" $(BOARDS_FILE)
+MONITOR_BAUDRATE = 57600
+
+ARDUINO_LIBS = \
+	       Streaming \
+	       Task \
+		   IRremote \
+		   EEPROM \
+		   Servo \
+		   PCD8544_SPI \
+		   MemoryFree \
+		   SPI
+
+-include $(ARDMK_DIR)/Arduino.mk
+
+CFLAGS_STD = -Wall -Wundef -Werror
+CXXFLAGS_STD = -Wall -Werror
+# !!! Important. You have to use make ispload to upload when using ISP programmer
 

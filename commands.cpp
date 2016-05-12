@@ -9,7 +9,7 @@
 long eepromSignature = 0xAFBAABFB;
 
 /**** Command names map ***/
-char *cmdName[] = {
+const char *cmdName[] = {
 	"Forward",			// CMD_FWD 0	// Forward
 	"Reverse",      	// CMD_REV 1	// Reverse
 	"Left",         	// CMD_LFT 2	// Left
@@ -77,11 +77,11 @@ void loadCmdMaps() {
 		// Signature and cound is good, read the maps
 		eeprom_read_to(cmdSerial, cmdSerial, sizeof(cmdSerial));
 		eeprom_read_to(cmdIR, cmdIR, sizeof(cmdIR));
-	#ifdef DEBUG
+	#ifdef _DEBUG
 		Serial << F("Command maps read from EEPROM.\n");
 	} else {
 		Serial << F("Command maps signature not found in EEPROM.\n");
-	#endif //DEBUG
+	#endif //_DEBUG
 	}
 }
 
@@ -96,8 +96,8 @@ void saveCmdMaps() {
 	// Now write the maps
 	eeprom_write_from(cmdSerial, cmdSerial, sizeof(cmdSerial));
 	eeprom_write_from(cmdIR, cmdIR, sizeof(cmdIR));
-	#ifdef DEBUG
+	#ifdef _DEBUG
 	Serial << F("Command maps written to EEPROM.\n");
-	#endif //DEBUG
+	#endif //_DEBUG
 }
 

@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include "config.h"
-#include "Streaming.h"
+#include <Streaming.h>
 #include "utils.h"
 
 /**
@@ -36,11 +36,11 @@ void OpenSerial(long speed) {
 		return;
 	}
 
-	#ifdef DEBUG
+	#ifdef _DEBUG
 	// Different speed attempted?
 	if(speed!=s) {
 		Serial << F("Serial open attempted with new speed: ") << speed \
 			   << F(". Not changed from: ") << s << endl;
 	}
-	#endif // DEBUG
+	#endif // _DEBUG
 };

@@ -19,9 +19,9 @@ SerialIn::SerialIn() : Task() {
 	// Open the serial port with default speed.
 	OpenSerial();
 
-	#ifdef DEBUG
+	#ifdef _DEBUG
     Serial << F("Starting SerialIn task...\n");
-	#endif // DEBUG
+	#endif // _DEBUG
 }
 
 /**
@@ -49,9 +49,9 @@ void SerialIn::run(uint32_t now) {
 	// the min delay allowed between input chars?
 	if(rxInterval < SI_MIN_DELAY) {
 		// Too quick. Ignore it
-		#ifdef DEBUG
+		#ifdef _DEBUG
 		Serial << "Serial min delay exceeded. Ignoring input...\n";
-		#endif	//DEBUG
+		#endif	//_DEBUG
 		return;
 	}
 	
@@ -112,10 +112,10 @@ IrIn::IrIn(uint8_t pin) : Task(),
 	_irRecv = new IRrecv(_pin);
 	_irRecv->enableIRIn();
 
-	#ifdef DEBUG
+	#ifdef _DEBUG
 	OpenSerial();
     Serial << F("Starting IrIn task...\n");
-	#endif // DEBUG
+	#endif // _DEBUG
 }
 
 /**
@@ -148,9 +148,9 @@ void IrIn::run(uint32_t now) {
 	// the min delay allowed between input?
 	if(rxInterval < IR_MIN_DELAY) {
 		// Too quick. Ignore it
-		#ifdef DEBUG
+		#ifdef _DEBUG
 		Serial << "IR min delay exceeded. Ignoring input...\n";
-		#endif	//DEBUG
+		#endif	//_DEBUG
 		return;
 	}
 	
@@ -431,9 +431,9 @@ bool InputDecoder::canRun(uint32_t now) {
 		// Reset learn mode and learn step
 		_learnMode = false;
 		_learnStep = 0;
-		#ifdef DEBUG
+		#ifdef _DEBUG
 		Serial << F("\nTimeout waiting for input. Aborting learn mode...\n");
-		#endif //DEBUG
+		#endif //_DEBUG
 	}
 	
 	// Nothing available
@@ -461,23 +461,23 @@ void InputDecoder::run(uint32_t now) {
 	// Test the input received agains all possible commands.
 	for (n=0; n<CMD_ZZZ; n++) {
 		if(_whatAvail==INP_SERIAL && _serIn==cmdSerial[n]) {
-			#ifdef DEBUG
+			#ifdef _DEBUG
 			Serial << "Received serial input: " << _serIn \
 				   << "  Repeat: " << _repeat << endl;
-			#endif // DEBUG
+			#endif // _DEBUG
 			break;
 		} else if(_whatAvail==INP_IR && _irCode==cmdIR[n]) {
-			#ifdef DEBUG
+			#ifdef _DEBUG
 			Serial << "Received IR input: " << _HEX(_irCode) \
 				   << "  Repeat: " << _repeat << endl;
-			#endif // DEBUG
+			#endif // _DEBUG
 			break;
 		}
 	}
 
 	// Find a valid command?
 	if(n==CMD_ZZZ) {
-		#ifdef DEBUG
+		#ifdef _DEBUG
 		if(_whatAvail==INP_SERIAL) {
 			Serial << "Invalid serial input: " << _serIn << endl;
 		} else if(_whatAvail==INP_IR) {
@@ -616,5 +616,5 @@ void CommandConsumer::run(uint32_t now) {
  * command issued.
  */
 char *CommandConsumer::lastCommand() {
-	return cmdName[_cmd];
+	return (char *)cmdName[_cmd];
 }

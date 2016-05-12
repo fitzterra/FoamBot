@@ -28,9 +28,9 @@
 #include "PCD8544_SPI.h"
 #include <Task.h>
 
-#ifdef DEBUG
-#include "Streaming.h"
-#endif // DEBUG
+#ifdef _DEBUG
+#include <Streaming.h>
+#endif // _DEBUG
 
 
 /**

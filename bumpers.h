@@ -12,9 +12,9 @@
 #include "driveTrain.h"
 #include <Task.h>
 
-#ifdef DEBUG
-#include "Streaming.h"
-#endif // DEBUG
+#ifdef _DEBUG
+#include <Streaming.h>
+#endif // _DEBUG
 
 
 /**

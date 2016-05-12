@@ -28,7 +28,7 @@
 #define LF_KEY 0x0A			// Line feed
 
 /**** Command names map ***/
-extern char *cmdName[CMD_ZZZ];
+extern const char *cmdName[CMD_ZZZ];
 
 /**** Map of IR codes to commands ****/
 extern unsigned long cmdIR[CMD_ZZZ];

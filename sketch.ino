@@ -4,15 +4,15 @@
 #include "lineFollow.h"
 #include "utils.h"
 #include <TaskScheduler.h>
-#include "Streaming.h"
+#include <Streaming.h>
 #include "lcd.h"
 #include "commands.h"
 #include "bumpers.h"
 #include "driveTrain.h"
 
-#ifdef DEBUG
+#ifdef _DEBUG
 #include "MemoryFree.h"
-#endif // DEBUG
+#endif // _DEBUG
 
 
 void setup() {

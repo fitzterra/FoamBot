@@ -6,7 +6,7 @@
 #define _CONFIG_H_
 
 // Define this to enable debugging
-#define DEBUG
+#define _DEBUG
 
 // ############### General utility definitions #################
 // NOTE!!! DO NOT change the order of these defs - LEFT and RIGHT are used as
