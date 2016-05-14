@@ -6,7 +6,7 @@ process to create generic robot control mechanisms for 2 wheeled (for now)
 robots using various sensors and control mechanisms.
 
 The idea is to create a type of robot control OS (ideas are still forming in my
-head on what exactly this will be) based on a preemtive task based control
+head on what exactly this will be) based on a non-preemtive task based control
 allocation system which will allow inputs (sensors, controls) and outputs
 (stearing, indicators, actuators, etc) to be plugable.
 
