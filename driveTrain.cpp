@@ -10,37 +10,70 @@
  * Default contstructor
  **/
 Wheel::Wheel() {
-    // Preset pin and side to uninitialized
-    _pin = -1;
+    // Preset pins and side to uninitialized
+    _pinServo = _pinDir = _pinPWM = -1;
     _side = -1;
 }
 
 /**
- * Contstructor to allow config at creation
+ * Contstructor for creating a servo controlled wheel
  *
  * See config() method
  **/
-Wheel::Wheel(uint8_t pin, uint8_t side) {
+Wheel::Wheel(uint8_t pinServo, uint8_t side) {
 	// Call config
-	config(pin, side);
+	config(pinServo, side);
 }
 
 /**
- * Configure wheel.
+ * Contstructor for creating a HBridge/DC Motor controlled wheel
+ *
+ * See config() method
+ **/
+Wheel::Wheel(uint8_t pinDir, uint8_t pinPWM, uint8_t side) {
+	// Call config
+	config(pinDir, pinPWM, side);
+}
+
+/**
+ * Configure method for servo controlled wheel.
  *
  * Set the pin the wheel is connected as well as the side of the robot it is
  * mounted on. Will set the wheel rotation to 0.
  *
- * @param pin The pin the servo is connected to
+ * @param pinServo The pin the servo is connected to
  * @param side The side (LEFT or RIGHT) the wheel is mounted
  **/
-void Wheel::config(uint8_t pin, uint8_t side) {
+void Wheel::config(uint8_t pinServo, uint8_t side) {
     // Save pin and side
-    _pin = pin;
+    _pinServo = pinServo;
     _side = side;
 
     // Attach the servo to the pin
-    _servo.attach(_pin);
+    _servo.attach(_pinServo);
+    // Set to stationary
+    rotate(0);
+}
+
+/**
+ * Configure method HBridge/DC Motor controlled wheel.
+ *
+ * Set the pins controling the wheel rotation as well as the side of the robot
+ * it is mounted on. Will set the wheel rotation to 0.
+ *
+ * @param pinDir The pin for direction control on the HBridge
+ * @param pinPWM The pin for speed control on the HBridge
+ * @param side The side (LEFT or RIGHT) the wheel is mounted
+ **/
+void Wheel::config(uint8_t pinDir, uint8_t pinPWM, uint8_t side) {
+    // Save pin and side
+    _pinDir = pinDir;
+    _pinPWM = pinPWM;
+    _side = side;
+
+    // Set up the pins
+    pinMode(_pinDir, OUTPUT);
+    pinMode(_pinPWM, OUTPUT); 
     // Set to stationary
     rotate(0);
 }
@@ -48,38 +81,83 @@ void Wheel::config(uint8_t pin, uint8_t side) {
 /**
  * Makes the wheel rotate.
  *
- * The speed value determines the speed and direction to rotate the servo in.
+ * The speed value determines the speed and direction to rotate the wheel in.
  * The speed is a value between 0 and 100 to indicate the percentage of full
- * speed at which to rotate the continues servo. 0 is stop and 100 is full speed.
+ * speed. 0 is stop and 100 is full speed.
  *
  * To rotate forward, speed must be a positive value. To rotate backwards, speed
- * must be a negative value. The wheel side (LEFT or RIGHT) determines what
- * frequency/degree value to to send to the servo for forwards and backwards.
+ * must be a negative value.
  *
- * Note that the values sent to servos for LEFT/RIGHT are mirrored.
+ * Note that the rotation direction will be auto *mirrored* for LEFT and RIGHT
+ * wheels. This allows the hardware connections to be made identical (not
+ * mirrored) and we do the mirroring in software.
  *
  * @param speed The rotation speed: 0%-100% with a positive value rotates forward
  *        and a negative value rotates backward.
  */
 void Wheel::rotate(int8_t speed) {
-    uint8_t angle;
-
     // Validate the speed
     if (speed<-100 || speed>100) return;
 
-    // Map the speed value between -100 (fullspeed reverse) and 100 (fullspeed
-    // ahead) to an angle between 0 (fullspeed rotate left) to 180 (fullspeed
-	// rotate right) - This is for the right motor... the left motor mirrors
-	// the angle.
-    if (_side==RIGHT) {
-        angle = map(speed, -100, 100, 0, 180);
-    } else {
-        angle = map(speed, 100, -100, 0, 180);
-    }
+    // Are we driving a servo?
+    if(_pinServo!=1) {
+        uint8_t angle;
 
-    // Set the speed and direction
-	Serial << "Setting " << _side << " angle to " << angle << " for speed " << speed << endl;
-    _servo.write(angle);
+        // Map the speed value between -100 (fullspeed reverse) and 100 (fullspeed
+        // ahead) to an angle between 0 (fullspeed rotate left) to 180 (fullspeed
+        // rotate right) - This is for the right motor... the left motor mirrors
+        // the angle.
+        if (_side==RIGHT) {
+            angle = map(speed, -100, 100, 0, 180);
+        } else {
+            angle = map(speed, 100, -100, 0, 180);
+        }
+
+        // Set the speed and direction
+        _servo.write(angle);
+    } else {
+        // We're driving an HBridge.
+        uint8_t dir, pwm;
+
+        // We model the direction and speed control based on an L9110 HBridge
+        // driver using the following truth table:
+        //
+        //   Input ||  Output || 
+        // IA | IB || OA | OB || Description
+        // ---+----++----+----++------------
+        // L  | L  || L  | L  || Motor off
+        // L  | H  || L  | H  || Forward
+        // H  | L  || H  | L  || Reverse
+        // H  | H  || H  | H  || Motor Off
+        //
+        // We will assume the A input to be the direction control which we will
+        // set to LOW or HIGH for reverse and forward respectively using
+        // digitalWrite.  This will set the one side of the motor to GND or VCC
+        // and then allows the other pin to do PWM which will result in a PWM
+        // signal on the other side of the motor connection. Keep in mind the
+        // low current PWM on the B *input* gets *switched* by the HBridge to a
+        // high wattage PWM *output* to the motor.
+        
+        // Determine the direction: Negative speed is reverse, positive is
+        // forward for the RIGHT wheel, and the oposite for the LEFT wheel.
+        dir = speed<0 ? (_side==RIGHT ? HIGH : LOW) : (_side==RIGHT ? LOW : HIGH);
+
+        // Determine the PWM duty cycle. When rotating forward (dir/IA is LOW),
+        // the speed pin, IB, needs a *high* duty cycle PWM for higher speeds,
+        // and a *low* duty cycle PWM signal for slower speeds.
+        // When rotating in reverse (dir/IA is HIGH), the opposite is true, and
+        // the PWM duty cycle should be *low* for higher speeds, and *high* for
+        // lower speeds.
+        // Map the duty cycle based on the rotation direction
+        if (dir==LOW) {
+            pwm = map(abs(speed), 0, 100, 0, 255);
+        } else {
+            pwm = map(abs(speed), 0, 100, 255, 0);
+        }
+        // Set the speed and direction
+        digitalWrite(_pinDir, dir);
+        analogWrite(_pinPWM, pwm);
+    }
 }
 
 

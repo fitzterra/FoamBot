@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <Arduino.h>
 #include <Servo.h>
-#include "Streaming.h"
+#include <Streaming.h>
 #include "config.h"
 #include "debug.h"
 
@@ -21,20 +21,31 @@
 #define MIN_SPEED -100  // Min speed value
 
 /**
- * Class for controlling a wheel.
+ * Class for controlling rotation of a wheel connected to a conitues rotation
+ * servo, or a brushed DC motor driver via an HBridge.
  *
- * The wheel is assumed to a continues servo motor.
+ * For the HBridge connected motor, a two input HBridge is required like the
+ * L9110 or similar that has two inputs to control motor direction, and one of
+ * the inputs should be able to be driven via a PWM signal to control speed.
  **/
 class Wheel {
     private:
-        uint8_t _pin;       // The pin the servo is connected to
-        uint8_t _side;      // Which side the wheel is located on. One of LEFT or RIGHT
+        // Private members for servo control
+        uint8_t _pinServo;  // If driving a servo, this will be the servo pin
         Servo _servo;       // The servo object
+
+        // Private members for HBridge control if driving a DC motor
+        uint8_t _pinDir;    // The pin to use for rotation direction control
+        uint8_t _pinPWM;    // The pin to use for speed control - must be a PWM pin
+
+        uint8_t _side;      // Side the wheel is located on. One of LEFT or RIGHT
 
     public:
 		Wheel();			// Default constructor
-        Wheel(uint8_t pin, uint8_t side);
-        void config(uint8_t pin, uint8_t side);
+        Wheel(uint8_t pinServo, uint8_t side);  // Constructor for servo control
+        Wheel(uint8_t pinDir, uint8_t pinPWM, uint8_t side); // HBrd Contstructor
+        void config(uint8_t pinServo, uint8_t side);
+        void config(uint8_t pinDir, uint8_t pinPWM, uint8_t side);
         void rotate(int8_t speed);
 };
 
